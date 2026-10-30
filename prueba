@@ -1,0 +1,275 @@
+plugins {
+    id("com.android.application") version "8.5.2" apply false
+    id("org.jetbrains.kotlin.android") version "1.9.24" apply false
+}
+
+org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
+android.useAndroidX=true
+kotlin.code.style=officialplugins {
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+}
+
+android {
+    namespace = "com.example.panelbasico"
+    compileSdk = 34
+
+    defaultConfig {
+        applicationId = "com.example.panelbasico"
+        minSdk = 24
+        targetSdk = 34
+        versionCode = 1
+        versionName = "1.0"
+    }
+    buildTypes {
+        release { isMinifyEnabled = false }
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application
+        android:label="Panel de control"
+        android:allowBackup="true"
+        android:theme="@android:style/Theme.DeviceDefault.NoActionBar">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:configChanges="orientation|screenSize|keyboardHidden|uiMode">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>package com.example.panelbasico
+
+import android.annotation.SuppressLint
+import android.app.Activity
+import android.os.Bundle
+import android.webkit.WebView
+import android.webkit.WebViewClient
+
+class MainActivity : Activity() {
+    private lateinit var web: WebView
+
+    @SuppressLint("SetJavaScriptEnabled")
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        web = WebView(this)
+        web.settings.javaScriptEnabled = true
+        web.settings.domStorageEnabled = true   // necesario para guardar los ajustes
+        web.webViewClient = WebViewClient()
+        setContentView(web)
+        if (savedInstanceState == null) {
+            web.loadUrl("file:///android_asset/index.html")
+        } else {
+            web.restoreState(savedInstanceState)
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        web.saveState(outState)
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {
+        if (web.canGoBack()) web.goBack() else super.onBackPressed()
+    }
+}
+
+</manifest><!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Panel de control</title>
+<style>
+:root{
+  color-scheme:light;
+  --bg:#eef1f5; --surface:#ffffff; --ink:#1d2733; --muted:#5d6b7a;
+  --line:#d9e0e8; --accent:#2f6fed; --accent-ink:#ffffff; --ok:#1f9d6b;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#12171d; --surface:#1b222b; --ink:#e8edf3; --muted:#9aa7b5;
+    --line:#2b3541; --accent:#6c9bff; --accent-ink:#0d1320; --ok:#4cc79a;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#12171d; --surface:#1b222b; --ink:#e8edf3; --muted:#9aa7b5;
+  --line:#2b3541; --accent:#6c9bff; --accent-ink:#0d1320; --ok:#4cc79a;
+}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.5 "Manrope",system-ui,"Segoe UI",Arial,sans-serif}
+main{max-width:640px;margin:0 auto;padding:24px 16px 48px}
+h1{font-size:1.6rem;font-weight:800;margin:0 0 4px}
+.sub{color:var(--muted);margin:0 0 24px}
+section{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:4px 20px;margin-bottom:16px}
+h2{font-size:1rem;font-weight:800;margin:16px 0 4px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 0;border-top:1px solid var(--line)}
+.row:first-of-type{border-top:0}
+.row label,.row .name{font-weight:600}
+.row small{display:block;color:var(--muted);font-weight:400}
+.val{min-width:3.2em;text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;max-width:220px;accent-color:var(--accent)}
+select{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+.switch{position:relative;width:46px;height:26px;flex:none}
+.switch input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer;z-index:1}
+.track{position:absolute;inset:0;background:var(--line);border-radius:26px;transition:background .15s}
+.track::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .15s}
+.switch input:checked + .track{background:var(--accent)}
+.switch input:checked + .track::after{transform:translateX(20px)}
+.switch input:focus-visible + .track,select:focus-visible,input[type=range]:focus-visible,button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.actions{display:flex;gap:12px;justify-content:flex-end;margin-top:8px}
+button{font:inherit;font-weight:600;border-radius:10px;padding:10px 18px;cursor:pointer;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+#msg{margin-top:12px;min-height:1.5em;text-align:right;color:var(--ok);font-weight:600}
+@media (prefers-reduced-motion:reduce){.track,.track::after{transition:none}}
+</style>
+</head>
+<body>
+<main>
+  <h1>Panel de control</h1>
+  <p class="sub">Ajusta las preferencias y guarda los cambios.</p>
+
+  <section>
+    <h2>Apariencia</h2>
+    <div class="row">
+      <div><label for="dark">Modo oscuro</label><small>Cambia los colores de la interfaz</small></div>
+      <span class="switch"><input type="checkbox" id="dark"><span class="track"></span></span>
+    </div>
+    <div class="row">
+      <label for="size">Tamaño del texto</label>
+      <input type="range" id="size" min="14" max="22" step="1" value="16">
+      <span class="val" id="size-v">16 px</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>Sonido</h2>
+    <div class="row">
+      <label for="sound">Sonido activado</label>
+      <span class="switch"><input type="checkbox" id="sound" checked><span class="track"></span></span>
+    </div>
+    <div class="row">
+      <label for="vol">Volumen</label>
+      <input type="range" id="vol" min="0" max="100" step="1" value="70">
+      <span class="val" id="vol-v">70 %</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>Rendimiento</h2>
+    <div class="row">
+      <label for="quality">Calidad gráfica</label>
+      <select id="quality">
+        <option value="baja">Baja</option>
+        <option value="media" selected>Media</option>
+        <option value="alta">Alta</option>
+      </select>
+    </div>
+    <div class="row">
+      <label for="notif">Avisos en pantalla</label>
+      <span class="switch"><input type="checkbox" id="notif" checked><span class="track"></span></span>
+    </div>
+  </section>
+
+  <div class="actions">
+    <button type="button" id="reset">Restablecer</button>
+    <button type="button" id="save" class="primary">Guardar cambios</button>
+  </div>
+  <div id="msg" role="status" aria-live="polite"></div>
+</main>
+
+<script>
+(function(){
+  var KEY = "panel-basico";
+  var defaults = {dark:false, size:16, sound:true, vol:70, quality:"media", notif:true};
+  var $ = function(id){ return document.getElementById(id); };
+  var ids = ["dark","size","sound","vol","quality","notif"];
+
+  function load(){
+    try { var s = localStorage.getItem(KEY); if (s) return Object.assign({}, defaults, JSON.parse(s)); } catch(e){}
+    return Object.assign({}, defaults);
+  }
+  function read(){
+    return {
+      dark:$("dark").checked, size:+$("size").value, sound:$("sound").checked,
+      vol:+$("vol").value, quality:$("quality").value, notif:$("notif").checked
+    };
+  }
+  function apply(c){
+    $("dark").checked = c.dark; $("size").value = c.size; $("sound").checked = c.sound;
+    $("vol").value = c.vol; $("quality").value = c.quality; $("notif").checked = c.notif;
+    preview();
+  }
+  function preview(){
+    var c = read();
+    document.documentElement.setAttribute("data-theme", c.dark ? "dark" : "light");
+    document.body.style.fontSize = c.size + "px";
+    $("size-v").textContent = c.size + " px";
+    $("vol-v").textContent = c.vol + " %";
+    $("vol").disabled = !c.sound;
+  }
+  function say(t){ $("msg").textContent = t; setTimeout(function(){ $("msg").textContent = ""; }, 2500); }
+
+  ids.forEach(function(id){ $(id).addEventListener("input", preview); });
+
+  $("save").addEventListener("click", function(){
+    try { localStorage.setItem(KEY, JSON.stringify(read())); say("Cambios guardados"); }
+    catch(e){ say("No se pudo guardar en este navegador"); }
+  });
+  $("reset").addEventListener("click", function(){
+    apply(defaults);
+    try { localStorage.removeItem(KEY); } catch(e){}
+    say("Valores restablecidos");
+  });
+
+  apply(load());
+})();
+</script>
+</body>
+</html>
+name: Build APK
+on:
+  push:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: 8.7
+      - run: gradle assembleDebug
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PanelBasico-APK
+          path: app/build/outputs/apk/debug/*.apk
+
+
+    }
+    kotlinOptions { jvmTarget = "17" }
+}
+
+
+pluginManagement {
+    repositories { google(); mavenCentral(); gradlePluginPortal() }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories { google(); mavenCentral() }
+}
+rootProject.name = "PanelBasico"
+include(":app")
